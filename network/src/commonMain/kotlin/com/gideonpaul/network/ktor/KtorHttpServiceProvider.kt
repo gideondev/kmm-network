@@ -53,6 +53,13 @@ class KtorHttpServiceProvider(
                                 parameters.appendAll(it.key, it.value)
                             }
                         }
+
+                        headers {
+                           request.headers.forEach {
+                               append(it.key, it.value)
+                           }
+                        }
+
                         method = io.ktor.http.HttpMethod.Get
                     }
 
