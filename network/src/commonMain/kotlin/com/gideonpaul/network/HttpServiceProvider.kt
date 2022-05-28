@@ -25,12 +25,4 @@ abstract class HttpServiceProvider(
             processor.processResponse(response)
         }
     }
-
-    fun addToRequestProcessor(processor: RequestProcessor) {
-        requestProcessors.add(processor)
-    }
-
-    fun addToResponseProcessor(processor: ResponseProcessor) {
-        responseProcessors.add(processor)
-    }
 }
