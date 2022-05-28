@@ -1,5 +1,5 @@
 package com.gideonpaul.network.request
 
-interface RequestPipeline {
+interface RequestProcessor {
     fun processRequest(request: Request): Request
 }

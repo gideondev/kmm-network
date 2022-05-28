@@ -3,6 +3,8 @@ package com.gideonpaul.network.ktor
 import com.gideonpaul.network.HttpServiceProvider
 import com.gideonpaul.network.request.HttpMethod
 import com.gideonpaul.network.request.Request
+import com.gideonpaul.network.request.RequestProcessor
+import com.gideonpaul.network.response.ResponseProcessor
 import io.ktor.client.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.plugins.logging.*
@@ -14,8 +16,13 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 
 class KtorHttpServiceProvider(
-    private val scope: CoroutineScope
-) : HttpServiceProvider {
+    private val scope: CoroutineScope,
+    private val requestProcessors: MutableList<RequestProcessor> = mutableListOf(),
+    private val responseProcessors: MutableList<ResponseProcessor> = mutableListOf()
+) : HttpServiceProvider(
+    requestProcessors = requestProcessors,
+    responseProcessors = responseProcessors
+) {
     var client: HttpClient
 
     init {
@@ -42,6 +49,8 @@ class KtorHttpServiceProvider(
         request: Request,
         completionHandler: (String) -> Unit
     ) {
+        processRequestPipeline(request)
+
         when (request.method) {
             HttpMethod.GET -> {
                 scope.launch {
@@ -55,9 +64,9 @@ class KtorHttpServiceProvider(
                         }
 
                         headers {
-                           request.headers.forEach {
-                               append(it.key, it.value)
-                           }
+                            request.headers.forEach {
+                                append(it.key, it.value)
+                            }
                         }
 
                         method = io.ktor.http.HttpMethod.Get
